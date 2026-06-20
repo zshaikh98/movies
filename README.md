@@ -82,10 +82,28 @@ movies/
 │       └── actor/
 │           └── leonardo-dicaprio.json  ← (example)
 │
+├── scripts/
+│   └── fetch_movie.py            ← pull TMDB metadata into the catalog (stdlib only)
+│
 └── schemas/                      ← JSON Schemas for future validation / DB import
     ├── movie.schema.json
     └── genre-ranking.schema.json
 ```
+
+## Adding a movie's metadata
+
+`scripts/fetch_movie.py` is a zero-dependency helper (Python stdlib only) that
+looks a film up on TMDB and writes it into `data/movies.json`:
+
+```bash
+python scripts/fetch_movie.py "Inception" --year 2010   # search + add
+python scripts/fetch_movie.py --id 27205                # exact TMDB id
+python scripts/fetch_movie.py "Heat" --year 1995 --dry-run   # preview only
+```
+
+It reads your token from `.env` and emits records matching
+`schemas/movie.schema.json`. Details + the egress-allowlist note are in
+[`docs/tmdb.md`](docs/tmdb.md).
 
 ---
 
@@ -105,6 +123,7 @@ they're used.
 ## Roadmap
 
 - [x] Define the data model and folder structure
+- [x] TMDB fetch script to populate the catalog
 - [ ] Run the first Haiku ranking sessions, genre by genre
 - [ ] Backfill TMDB metadata for everything ranked
 - [ ] Generate the first subcategory views (actor / director / decade)

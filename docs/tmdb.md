@@ -53,6 +53,35 @@ Common poster sizes: `w92`, `w154`, `w185`, `w342`, `w500`, `w780`, `original`.
 We store only `poster_path` in the catalog and build full URLs on demand, so we
 can change sizes later without rewriting data.
 
+## The fetch script — `scripts/fetch_movie.py`
+
+A zero-dependency (stdlib-only) helper that does the search → details → credits →
+catalog mapping for you and upserts the result into `data/movies.json`.
+
+```bash
+# Search by title (interactive pick if several films match)
+python scripts/fetch_movie.py "Inception" --year 2010
+
+# Skip search and fetch an exact TMDB id
+python scripts/fetch_movie.py --id 27205
+
+# Non-interactive: take the Nth search result (good for scripts/CI)
+python scripts/fetch_movie.py "Dune" --pick 2
+
+# Preview the mapped entry without writing
+python scripts/fetch_movie.py "Heat" --year 1995 --dry-run
+```
+
+It reads credentials from `.env`, prefers the v4 Bearer token, preserves the
+original `added_at` on updates, keeps `data/movies.json` sorted by id (clean
+diffs), and emits a record that matches `schemas/movie.schema.json`. After it
+adds a movie, rank it into each of its genres (see `ranking-method.md`).
+
+> **Network note:** the script talks to `api.themoviedb.org` (and posters come
+> from `image.tmdb.org`). In a sandboxed environment with an egress allowlist,
+> add both hosts to the network settings, or run the script locally where
+> outbound HTTPS is open.
+
 ## Quick connectivity check
 
 With the v4 token loaded into your shell:
