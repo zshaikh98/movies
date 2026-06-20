@@ -1,0 +1,20 @@
+# Secrets — never commit real API keys/tokens
+.env
+.env.local
+*.local
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Future tooling (left in early so they don't surprise us later)
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/

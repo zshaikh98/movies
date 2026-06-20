@@ -1,0 +1,12 @@
+{
+  "type": "actor",
+  "name": "Leonardo DiCaprio",
+  "slug": "leonardo-dicaprio",
+  "derived_from": "master genre rankings",
+  "sort_rule": "best (lowest) master genre rank, ties broken by title",
+  "generated_at": "2026-06-20",
+  "_comment": "Example DERIVED view. Not hand-ranked — regenerated from data/movies.json + data/rankings/. 'best_genre' / 'genre_rank' show where the sort value came from.",
+  "ranked": [
+    { "rank": 1, "tmdb_id": 27205, "title": "Inception", "best_genre": "Science Fiction", "genre_rank": 1 }
+  ]
+}
