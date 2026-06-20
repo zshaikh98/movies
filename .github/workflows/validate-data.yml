@@ -1,0 +1,19 @@
+name: Validate data
+
+# Runs the data integrity checks on every push and PR. Guards the catalog that
+# the "Fetch movie metadata" workflow auto-commits.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Validate data files
+        run: python scripts/validate_data.py

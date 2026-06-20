@@ -83,7 +83,8 @@ movies/
 │           └── leonardo-dicaprio.json  ← (example)
 │
 ├── scripts/
-│   └── fetch_movie.py            ← pull TMDB metadata into the catalog (stdlib only)
+│   ├── fetch_movie.py            ← pull TMDB metadata into the catalog (stdlib only)
+│   └── validate_data.py         ← structural + referential integrity checks (CI)
 │
 └── schemas/                      ← JSON Schemas for future validation / DB import
     ├── movie.schema.json
@@ -138,6 +139,7 @@ The credential model, rotation steps, and the CI guardrail are documented in
 
 - [x] Define the data model and folder structure
 - [x] TMDB fetch script to populate the catalog
+- [x] CI: secret guard + data integrity validation
 - [ ] Run the first Haiku ranking sessions, genre by genre
 - [ ] Backfill TMDB metadata for everything ranked
 - [ ] Generate the first subcategory views (actor / director / decade)
