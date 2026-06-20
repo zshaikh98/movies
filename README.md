@@ -120,9 +120,17 @@ cp .env.example .env
 # then paste your TMDB credentials into .env
 ```
 
-Your TMDB credentials (read access token + API key) live in `.env`, which is
-**gitignored** and never committed. See [`docs/tmdb.md`](docs/tmdb.md) for how
-they're used.
+Two supported ways to supply credentials — use whichever fits the moment:
+
+- **Local** (`.env`) — best for fast, iterative work (e.g. bulk-adding films
+  during a ranking session). Gitignored, never committed.
+- **GitHub Secrets** — the secure default for running the fetch from anywhere,
+  with no credentials on disk. See
+  [running it from Actions](docs/tmdb.md#running-it-from-github-actions).
+
+The credential model, rotation steps, and the CI guardrail are documented in
+[`SECURITY.md`](SECURITY.md). The same `fetch_movie.py` reads from either source
+(env vars override `.env`), so there's nothing to switch.
 
 ---
 
