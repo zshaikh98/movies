@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zshaikh98/movies/schemas/genre-ranking.schema.json",
+  "title": "Genre ranking",
+  "description": "Schema for data/rankings/<slug>.json — one ordered list per genre (the master ranking).",
+  "type": "object",
+  "required": ["genre", "slug", "ranked"],
+  "properties": {
+    "genre": { "type": "string" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "updated_at": { "type": "string", "format": "date" },
+    "_comment": { "type": "string" },
+    "ranked": {
+      "type": "array",
+      "description": "Ordered best -> worst. 'rank' must equal the 1-based array index.",
+      "items": {
+        "type": "object",
+        "required": ["rank", "tmdb_id", "title"],
+        "properties": {
+          "rank": { "type": "integer", "minimum": 1 },
+          "tmdb_id": { "type": "integer" },
+          "title": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zshaikh98/movies/schemas/movie.schema.json",
+  "title": "Movie catalog",
+  "description": "Schema for data/movies.json — the master catalog of movie metadata.",
+  "type": "object",
+  "required": ["movies"],
+  "properties": {
+    "_comment": { "type": "string" },
+    "movies": {
+      "type": "object",
+      "description": "Map of TMDB id (as string) -> movie record.",
+      "patternProperties": {
+        "^[0-9]+$": { "$ref": "#/$defs/movie" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "movie": {
+      "type": "object",
+      "required": ["tmdb_id", "title", "release_year", "genres", "watched"],
+      "properties": {
+        "tmdb_id": { "type": "integer" },
+        "title": { "type": "string" },
+        "release_year": { "type": "integer", "minimum": 1870 },
+        "genres": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "director": { "type": "string" },
+        "cast": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "runtime": { "type": "integer", "minimum": 0 },
+        "poster_path": { "type": "string" },
+        "overview": { "type": "string" },
+        "watched": { "type": "boolean" },
+        "added_at": { "type": "string", "format": "date" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
