@@ -105,6 +105,12 @@ It reads your token from `.env` and emits records matching
 `schemas/movie.schema.json`. Details + the egress-allowlist note are in
 [`docs/tmdb.md`](docs/tmdb.md).
 
+**Or run it from GitHub** — no local setup needed. Store your TMDB token in
+repository secrets and use the **Fetch movie metadata** workflow
+(`.github/workflows/fetch-movie.yml`): Actions tab → *Run workflow* → type a
+title/year, and it commits the result back. Setup steps are in
+[`docs/tmdb.md`](docs/tmdb.md#running-it-from-github-actions).
+
 ---
 
 ## Setup

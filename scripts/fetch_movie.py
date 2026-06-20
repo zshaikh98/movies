@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import urllib.error
 import urllib.parse
@@ -35,17 +36,32 @@ CATALOG_PATH = REPO_ROOT / "data" / "movies.json"
 # --------------------------------------------------------------------------- #
 # Config
 # --------------------------------------------------------------------------- #
+CONFIG_KEYS = (
+    "TMDB_READ_ACCESS_TOKEN",
+    "TMDB_API_KEY",
+    "TMDB_IMAGE_BASE_URL",
+    "TMDB_POSTER_SIZE",
+)
+
+
 def load_env(path: Path = ENV_PATH) -> dict[str, str]:
-    """Minimal .env parser (KEY=VALUE lines, ignores blanks and # comments)."""
+    """Resolve config from the .env file, then let real environment variables win.
+
+    Locally you keep creds in .env; in CI (GitHub Actions) they're injected as
+    environment variables from GitHub Secrets, which take precedence here.
+    """
     env: dict[str, str] = {}
-    if not path.exists():
-        return env
-    for line in path.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        env[key.strip()] = value.strip().strip('"').strip("'")
+    if path.exists():
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            env[key.strip()] = value.strip().strip('"').strip("'")
+    # Environment variables override the file (this is how CI supplies secrets).
+    for key in CONFIG_KEYS:
+        if os.environ.get(key):
+            env[key] = os.environ[key]
     return env
 
 

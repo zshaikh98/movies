@@ -1,0 +1,98 @@
+name: Fetch movie metadata
+
+# Manually run from the GitHub "Actions" tab. Enter a movie title (and year),
+# or an exact TMDB id, and this fetches the metadata via scripts/fetch_movie.py
+# and commits the updated data/movies.json back to the branch you ran it on.
+#
+# Credentials come from repository secrets (Settings -> Secrets and variables ->
+# Actions):  TMDB_READ_ACCESS_TOKEN  (preferred)  and/or  TMDB_API_KEY.
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "Movie title to search (leave blank if using tmdb_id)"
+        required: false
+        type: string
+      year:
+        description: "Release year (optional, disambiguates the search)"
+        required: false
+        type: string
+      tmdb_id:
+        description: "Exact TMDB id (skips search; overrides title)"
+        required: false
+        type: string
+      pick:
+        description: "Take the Nth search result when several match"
+        required: false
+        default: "1"
+        type: string
+      dry_run:
+        description: "Preview only — don't write or commit"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  # Serialize runs so two fetches don't race on data/movies.json.
+  group: fetch-movie-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Fetch metadata from TMDB
+        env:
+          TMDB_READ_ACCESS_TOKEN: ${{ secrets.TMDB_READ_ACCESS_TOKEN }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          # Inputs are passed through the environment (never interpolated into
+          # the shell) so a crafted title can't inject commands.
+          TITLE: ${{ inputs.title }}
+          YEAR: ${{ inputs.year }}
+          TMDB_ID: ${{ inputs.tmdb_id }}
+          PICK: ${{ inputs.pick }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TMDB_READ_ACCESS_TOKEN}" ] && [ -z "${TMDB_API_KEY}" ]; then
+            echo "::error::No TMDB credentials. Add TMDB_READ_ACCESS_TOKEN (or TMDB_API_KEY) to repository secrets."
+            exit 1
+          fi
+          args=()
+          if [ -n "${TMDB_ID}" ]; then
+            args+=(--id "${TMDB_ID}")
+          else
+            if [ -z "${TITLE}" ]; then
+              echo "::error::Provide a 'title' or a 'tmdb_id'."
+              exit 1
+            fi
+            args+=("${TITLE}")
+            [ -n "${YEAR}" ] && args+=(--year "${YEAR}")
+          fi
+          [ -n "${PICK}" ] && args+=(--pick "${PICK}")
+          [ "${DRY_RUN}" = "true" ] && args+=(--dry-run)
+          python scripts/fetch_movie.py "${args[@]}"
+
+      - name: Commit updated catalog
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain data/movies.json)" ]; then
+            echo "No catalog changes to commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/movies.json
+          git commit -m "Add movie metadata via TMDB fetch workflow"
+          git push origin HEAD:"${GITHUB_REF_NAME}"

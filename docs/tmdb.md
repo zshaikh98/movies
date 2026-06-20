@@ -82,6 +82,48 @@ adds a movie, rank it into each of its genres (see `ranking-method.md`).
 > add both hosts to the network settings, or run the script locally where
 > outbound HTTPS is open.
 
+### Credential resolution order
+
+The script reads config from `.env`, then lets real **environment variables
+override** it. So:
+
+- **Locally** → keep creds in the gitignored `.env`.
+- **In CI** → no `.env` exists; GitHub Secrets are injected as env vars and win.
+
+The same `scripts/fetch_movie.py` works in both places unchanged.
+
+## Running it from GitHub Actions
+
+The workflow `.github/workflows/fetch-movie.yml` runs the fetch on a
+GitHub-hosted runner (open internet — no allowlist headaches) and commits the
+updated `data/movies.json` back to the branch.
+
+**One-time setup — add repository secrets** (Settings → Secrets and variables →
+Actions → *New repository secret*):
+
+| Secret name              | Value                          |
+| ------------------------ | ------------------------------ |
+| `TMDB_READ_ACCESS_TOKEN` | your v4 read access token      |
+| `TMDB_API_KEY`           | your v3 API key *(optional)*   |
+
+**To run:** Actions tab → *Fetch movie metadata* → **Run workflow** → pick the
+branch, enter a `title` (+ `year`) or a `tmdb_id`, then run. Inputs:
+
+| Input     | Notes                                                        |
+| --------- | ------------------------------------------------------------ |
+| `title`   | Movie title to search (omit if using `tmdb_id`).             |
+| `year`    | Optional; disambiguates remakes / same-title films.         |
+| `tmdb_id` | Exact TMDB id — skips search entirely.                       |
+| `pick`    | Which result to take when several match (default `1`).       |
+| `dry_run` | Preview only; nothing is written or committed.               |
+
+Because Actions runs non-interactively, ambiguous titles use `pick` (default the
+first result) — the chosen film is printed in the run log, so verify it there;
+re-run with a higher `pick` or an exact `tmdb_id` if it grabbed the wrong one.
+The workflow serializes runs (concurrency group) so two fetches can't race on
+`data/movies.json`, and it needs no extra permissions beyond the built-in
+`GITHUB_TOKEN` (`contents: write`).
+
 ## Quick connectivity check
 
 With the v4 token loaded into your shell:
