@@ -1,18 +1,4 @@
 {
-  "_comment": "Master catalog of movie metadata, keyed by TMDB id. Populated during ranking sessions from TMDB. The single entry below is a sample/template — replace it with real data.",
-  "movies": {
-    "27205": {
-      "tmdb_id": 27205,
-      "title": "Inception",
-      "release_year": 2010,
-      "genres": ["Science Fiction", "Action", "Adventure"],
-      "director": "Christopher Nolan",
-      "cast": ["Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page", "Tom Hardy"],
-      "runtime": 148,
-      "poster_path": "/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg",
-      "overview": "Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets, is offered a chance to regain his old life as payment for a task considered to be impossible: 'inception', the implantation of another person's idea into a target's subconscious.",
-      "watched": true,
-      "added_at": "2026-06-20"
-    }
-  }
+  "_comment": "Master catalog of movie metadata, keyed by TMDB id. Populated during ranking sessions via scripts/fetch_movie.py (TMDB).",
+  "movies": {}
 }

@@ -2,8 +2,5 @@
   "genre": "Science Fiction",
   "slug": "science-fiction",
   "updated_at": "2026-06-20",
-  "_comment": "Example genre ranking. Ordered best -> worst; 'rank' is index+1. Only the first entry references a real catalog movie (27205). Replace with real rankings.",
-  "ranked": [
-    { "rank": 1, "tmdb_id": 27205, "title": "Inception" }
-  ]
+  "ranked": []
 }
